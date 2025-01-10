@@ -1,0 +1,12 @@
+{
+    "semi": true,
+    "useTabs": false,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "bracketSpacing": true,
+    "endOfLine": "auto",
+    "singleQuote": true,
+    "arrowParens": "avoid",
+    "printWidth": 150
+  }
+  
