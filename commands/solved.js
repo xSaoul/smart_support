@@ -10,7 +10,7 @@ module.exports = new CommandBuilder()
     const currentTags = channel.appliedTags;
     const solvedTag = tags.find(tag => tag.name.toLowerCase() === 'solved');
     if (currentTags.includes(solvedTag.id)) return ctx.interaction.reply({ content: 'This post is already marked as solved.', ephemeral: true });
-    const newTags = [solvedTag.id, ...channel.appliedTags];
+    const newTags = [solvedTag.id];
     channel.setAppliedTags(newTags);
     ctx.interaction.reply({ content: `This post has been marked as solved.\n-# Post closed <t:${Date.now().toString().slice(0, -3)}:R>.` });
     channel.setArchived(true);
