@@ -1,3 +1,9 @@
 const { ShardClient, ClientOptions } = require('shardclient');
-const client = new ShardClient(new ClientOptions().setGuildCommandsId('1120465621554040942').setDevelopers('439601142528344065'));
+const { GatewayIntentBits } = require('discord.js');
+const client = new ShardClient(
+  new ClientOptions()
+    .setGuildCommandsId('1120465621554040942')
+    .setDevelopers('439601142528344065')
+    .setIntents([GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers])
+);
 client.login();
