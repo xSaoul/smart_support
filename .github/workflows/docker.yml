@@ -25,4 +25,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/Xsaoul/sah_support:latest
+          tags: ghcr.io/xsaoul/sah_support:latest
