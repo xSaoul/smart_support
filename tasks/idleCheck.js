@@ -5,7 +5,7 @@ async function checkIdleThreads(client) {
     `
     SELECT thread_id, op_id, reminder_sent_time FROM thread_timers
     WHERE reminder_sent = FALSE
-    AND last_posted < NOW() - INTERVAL 48 HOUR
+    AND last_posted < NOW() - INTERVAL 2 MINUTE
     AND op_id = ?
   `,
     [USER_ID]
@@ -30,13 +30,13 @@ async function checkIdleThreads(client) {
           continue;
         }
         await thread.send({
-          content: `<@${op_id}> Your thread has been idle for over 48 hours. 
-            <tree_end:951969115264913528> If this issue is not resolved, please reply within 24hrs to prevent this thread from closing.`,
+          content: `<@${op_id}> Your thread has been idle for over 2 minutes. 
+            <tree_end:951969115264913528> If this issue is not resolved, please reply within 3 minutes to prevent this thread from closing.`,
         });
         await db.execute(
           `
           UPDATE thread_timers 
-          SET reminder_sent = TRUE, close_scheduled_time = NOW() + INTERVAL 24 HOUR 
+          SET reminder_sent = TRUE, close_scheduled_time = NOW() + INTERVAL 3 MINUTE 
           WHERE thread_id = ?`,
           [thread_id]
         );

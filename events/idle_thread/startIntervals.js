@@ -6,12 +6,9 @@ module.exports = new EventBuilder()
   .setTrigger(Events.ClientReady)
   .setOnce(true)
   .setCallback(client => {
-    setInterval(
-      () => {
-        console.log('Checking idle and closing threads...');
-        checkIdleThreads(client);
-        checkClosingThreads(client);
-      },
-      60 * 60 * 1000
-    );
+    setInterval(() => {
+      console.log('Checking idle and closing threads...');
+      checkIdleThreads(client);
+      checkClosingThreads(client);
+    }, 60 * 1000);
   });
