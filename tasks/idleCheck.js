@@ -1,10 +1,15 @@
 const db = require('../mariadb');
+const USER_ID = '439601142528344065';
 async function checkIdleThreads(client) {
-  const [rows] = await db.execute(`
+  const [rows] = await db.execute(
+    `
     SELECT thread_id, op_id, reminder_sent_time FROM thread_timers
     WHERE reminder_sent = FALSE
     AND last_posted < NOW() - INTERVAL 48 HOUR
-    `);
+    AND op_id = ?
+  `,
+    [USER_ID]
+  );
 
   for (const { thread_id, op_id } of rows) {
     try {

@@ -1,10 +1,15 @@
 const db = require('../mariadb');
+const USER_ID = '439601142528344065';
 async function checkClosingThreads(client) {
-  const [rows] = await db.execute(`
+  const [rows] = await db.execute(
+    `
     SELECT thread_id, op_id, close_scheduled_time FROM thread_timers
     WHERE close_scheduled_time IS NOT NULL
     AND close_scheduled_time < NOW()
-    `);
+    AND op_id = ?
+  `,
+    [USER_ID]
+  );
 
   for (const { thread_id, op_id } of rows) {
     try {
