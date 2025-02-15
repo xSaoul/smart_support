@@ -3,7 +3,7 @@ const USER_ID = '439601142528344065';
 async function checkIdleThreads(client) {
   const [rows] = await db.execute(
     `
-    SELECT thread_id, op_id, reminder_sent_time FROM thread_timers
+    SELECT thread_id, op_id, reminder_sent FROM thread_timers
     WHERE reminder_sent = FALSE
     AND last_posted < NOW() - INTERVAL 2 MINUTE
     AND op_id = ?
