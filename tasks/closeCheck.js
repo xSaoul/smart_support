@@ -11,13 +11,16 @@ async function checkClosingThreads(client) {
     [USER_ID]
   );
 
+  console.log(`Found ${rows.length} thread(s) to check for closable status.`);
+
+  if (rows.length === 0) return;
+
   for (const { thread_id, op_id } of rows) {
     try {
       const thread = await client.channels.fetch(thread_id);
       if (thread) {
-        await thread.send({ content: `<@${op_id}> Thread has been closed due to inactivity.` });
+        await thread.send({ content: `<@${op_id}> Your thread has been closed due to inactivity.` });
         await thread.setArchived(true);
-        console.log(`Thread ${thread_id} closed due to inactivity.`);
       }
       await db.execute('DELETE FROM thread_timers WHERE thread_id = ?', [thread_id]);
     } catch (err) {

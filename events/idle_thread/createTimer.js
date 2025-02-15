@@ -11,7 +11,7 @@ module.exports = new EventBuilder()
     if (opId !== '439601142528344065') return;
     if (opId !== msg.author.id) return;
     if (parent.parent?.name.toLowerCase() !== 'support' || msg.channel.type !== 11) return;
-    await db.execute(
+    const [result] = await db.execute(
       `
       INSERT INTO thread_timers (thread_id, op_id, last_posted, reminder_sent)
       VALUES (?, ?, NOW(), FALSE)
@@ -19,4 +19,5 @@ module.exports = new EventBuilder()
       `,
       [threadId, opId]
     );
+    if (result.affectedRows === 1) console.log(`Thread ${threadId} for OP ${opId} has been created.`);
   });
