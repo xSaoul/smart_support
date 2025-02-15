@@ -6,6 +6,8 @@ module.exports = new CommandBuilder()
   .setCallback(ctx => {
     const channel = ctx.channel;
     const forum = channel.parent;
+    if (forum.parent?.name.toLowerCase() !== 'support' || channel.type !== 11)
+      return ctx.interaction.reply({ content: 'This command can only be used in a support thread.', ephemeral: true });
     const tags = forum.availableTags;
     const currentTags = channel.appliedTags;
     const solvedTag = tags.find(tag => tag.name.toLowerCase() === 'solved');
