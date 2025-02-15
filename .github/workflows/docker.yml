@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - "*"
 
 jobs:
   build:
@@ -20,9 +21,20 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set Docker Tags
+        id: vars
+        run: |
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          BRANCH_NAME=${BRANCH_NAME//\//-}
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            echo "TAG=latest" >> $GITHUB_ENV
+          else
+            echo "TAG=$BRANCH_NAME" >> $GITHUB_ENV
+          fi
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tags: ghcr.io/xsaoul/sah_support:latest
+          tags: ghcr.io/xsaoul/sah_support:${{ env.TAG }}

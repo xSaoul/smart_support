@@ -9,7 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^14.17.2",
+    "discord.js": "^14.17.3",
+    "mysql2": "^3.12.0",
     "shardclient": "^1.2.4"
   },
   "devDependencies": {
