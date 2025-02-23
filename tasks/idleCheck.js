@@ -1,14 +1,11 @@
 const db = require('../mariadb');
-const USER_ID = '439601142528344065';
 async function checkIdleThreads(client) {
   const [rows] = await db.execute(
     `
     SELECT thread_id, op_id, reminder_sent FROM thread_timers
     WHERE reminder_sent = FALSE
     AND last_posted < NOW() - INTERVAL 48 HOUR
-    AND op_id = ?
-  `,
-    [USER_ID]
+  `
   );
 
   console.log(`Found ${rows.length} thread(s) to check for idle status.`);
@@ -41,10 +38,15 @@ async function checkIdleThreads(client) {
         );
         continue;
       }
+      const forum = thread.parent;
+      const tags = forum.availableTags;
+      const currentTags = thread.appliedTags;
+      const waitingTag = tags.find(tag => tag.name.toLowerCase() === 'waiting');
+      if (currentTags.includes(waitingTag.id)) continue;
 
       await thread.send({
         content: `<@${op_id}> Your thread has been idle for over 48 hours. 
-            <tree_end:951969115264913528> If this issue is not resolved, please reply within 24hrs to prevent this thread from closing.`,
+            <:tree_end:951969115264913528> If this issue is not resolved, please reply within 24hrs to prevent this thread from closing.`,
       });
       await db.execute(
         `

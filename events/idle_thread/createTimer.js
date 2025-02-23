@@ -8,7 +8,6 @@ module.exports = new EventBuilder()
     const opId = msg.channel.ownerId;
     const threadId = msg.channel.id;
     const parent = msg.channel.parent;
-    if (opId !== '439601142528344065') return;
     if (opId !== msg.author.id) return;
     if (parent.parent?.name.toLowerCase() !== 'support' || msg.channel.type !== 11) return;
     const [result] = await db.execute(
