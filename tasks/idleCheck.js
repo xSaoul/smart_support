@@ -43,7 +43,9 @@ async function checkIdleThreads(client) {
       const currentTags = thread.appliedTags;
       const waitingTag = tags.find(tag => tag.name.toLowerCase() === 'waiting');
       if (currentTags.includes(waitingTag.id)) continue;
-
+      const solvedTag = tags.find(tag => tag.name.toLowerCase() === 'solved');
+      if (currentTags.includes(solvedTag.id)) continue;
+      if (thread.archived) continue;
       await thread.send({
         content: `<@${op_id}> Your thread has been idle for over 48 hours. 
             <:tree_end:951969115264913528> If this issue is not resolved, please reply within 24hrs to prevent this thread from closing.`,
