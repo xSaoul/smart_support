@@ -1,22 +1,17 @@
-const db = require('../mariadb');
+const schema = require('../db/thread_schema');
+
 async function checkClosingThreads(client) {
-  const [rows] = await db.execute(
-    `
-    SELECT thread_id, op_id, close_scheduled_time FROM thread_timers
-    WHERE close_scheduled_time IS NOT NULL
-    AND close_scheduled_time < NOW()
-    `
-  );
+  const rows = await schema.find({ closeScheduledTime: { $ne: null, $lt: new Date() } });
 
   console.log(`Found ${rows.length} thread(s) to check for closable status.`);
 
   if (rows.length === 0) return;
 
-  for (const { thread_id, op_id } of rows) {
+  for (const { threadId, opId } of rows) {
     try {
-      const thread = await client.channels.fetch(thread_id);
+      const thread = await client.channels.fetch(threadId);
       if (thread) {
-        await thread.send({ content: `<@${op_id}> Your thread has been closed due to inactivity.` });
+        await thread.send({ content: `<@${opId}> Your thread has been closed due to inactivity.` });
         const forum = thread.parent;
         const tags = forum.availableTags;
         const currentTags = thread.appliedTags;
@@ -31,9 +26,9 @@ async function checkClosingThreads(client) {
         }
         await thread.setArchived(true);
       }
-      await db.execute('DELETE FROM thread_timers WHERE thread_id = ?', [thread_id]);
+      await schema.deleteOne({ threadId });
     } catch (err) {
-      console.error(`Failed to close thread ${thread_id}:`, err);
+      console.error(`Failed to close thread ${threadId}:`, err);
     }
   }
 }

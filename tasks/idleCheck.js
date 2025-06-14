@@ -1,64 +1,45 @@
-const db = require('../mariadb');
+const schema = require('../db/thread_schema');
+
 async function checkIdleThreads(client) {
-  const [rows] = await db.execute(
-    `
-    SELECT thread_id, op_id, reminder_sent FROM thread_timers
-    WHERE reminder_sent = FALSE
-    AND last_posted < NOW() - INTERVAL 48 HOUR
-  `
-  );
+  const rows = await schema.find({ reminderSent: false, lastPosted: { $lt: new Date(Date.now() - 48 * 60 * 60 * 1000) } });
 
   console.log(`Found ${rows.length} thread(s) to check for idle status.`);
 
   if (rows.length === 0) return;
 
-  for (const { thread_id, op_id } of rows) {
+  for (const { threadId, opId } of rows) {
     try {
-      const thread = await client.channels.fetch(thread_id);
+      const thread = await client.channels.fetch(threadId);
       if (!thread) {
-        console.log(`Thread ${thread_id} not found. Deleting from database.`);
-        await db.execute(
-          `
-          DELETE FROM thread_timers WHERE thread_id = ?
-          `,
-          [thread_id]
-        );
+        console.log(`Thread ${threadId} not found. Deleting from database.`);
+        await schema.deleteOne({ threadId: threadId });
         continue;
       }
 
       const lastMessage = await thread.messages.fetch({ limit: 1 });
       const lastMessageAuthor = lastMessage.first()?.author.id;
-      if (lastMessageAuthor === op_id) {
-        await db.execute(
-          `
-          UPDATE thread_timers 
-          SET last_posted = NOW(), close_scheduled_time = NULL 
-          WHERE thread_id = ?`,
-          [thread_id]
-        );
+      if (lastMessageAuthor === opId) {
+        await schema.updateOne({ threadId, opId }, { $set: { lastPosted: new Date(), closeScheduledTime: null } });
         continue;
       }
       const forum = thread.parent;
       const tags = forum.availableTags;
       const currentTags = thread.appliedTags;
       const waitingTag = tags.find(tag => tag.name.toLowerCase() === 'waiting');
-      if (currentTags.includes(waitingTag.id)) continue;
+      if (waitingTag && currentTags.includes(waitingTag.id)) continue;
       const solvedTag = tags.find(tag => tag.name.toLowerCase() === 'solved');
-      if (currentTags.includes(solvedTag.id)) continue;
+      if (solvedTag && currentTags.includes(solvedTag.id)) continue;
       if (thread.archived) continue;
       await thread.send({
-        content: `<@${op_id}> Your thread has been idle for over 48 hours. 
+        content: `<@${opId}> Your thread has been idle for over 48 hours. 
             <:tree_end:951969115264913528> If this issue is not resolved, please reply within 24hrs to prevent this thread from closing.`,
       });
-      await db.execute(
-        `
-          UPDATE thread_timers 
-          SET reminder_sent = TRUE, close_scheduled_time = NOW() + INTERVAL 24 HOUR 
-          WHERE thread_id = ?`,
-        [thread_id]
+      await schema.updateOne(
+        { threadId: threadId, opId: opId },
+        { $set: { reminderSent: true, closeScheduledTime: new Date(Date.now() + 24 * 60 * 60 * 1000) } }
       );
     } catch (err) {
-      console.error(`Failed to send message in thread ${thread_id}:`, err);
+      console.error(`Failed to send message in thread ${threadId}:`, err);
     }
   }
 }
