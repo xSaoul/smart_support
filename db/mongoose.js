@@ -7,8 +7,7 @@ module.exports = {
     const start = Date.now();
     mongoose
       .connect(process.env.MONGO, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
+        dbName: 'smartsupport',
       })
       .then(() => {
         const end = Date.now();
