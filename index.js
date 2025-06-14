@@ -1,5 +1,7 @@
 const { ShardClient, ClientOptions } = require('shardclient');
 const { GatewayIntentBits } = require('discord.js');
+const mongoose = require('./db/mongoose');
+mongoose.login();
 
 const client = new ShardClient(
   new ClientOptions()
