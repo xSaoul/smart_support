@@ -1,7 +1,7 @@
 const schema = require('../db/thread_schema');
 
 async function checkIdleThreads(client) {
-  const rows = await schema.find({ reminderSent: false, lastPosted: { $lt: new Date(Date.now() - 48 * 60 * 60 * 1000) } });
+  const rows = await schema.find({ reminderSent: false, lastPosted: { $lt: new Date(Date.now() - 120 * 1000) } });
 
   console.log(`Found ${rows.length} thread(s) to check for idle status.`);
 
@@ -36,7 +36,7 @@ async function checkIdleThreads(client) {
       });
       await schema.updateOne(
         { threadId: threadId, opId: opId },
-        { $set: { reminderSent: true, closeScheduledTime: new Date(Date.now() + 24 * 60 * 60 * 1000) } }
+        { $set: { reminderSent: true, closeScheduledTime: new Date(Date.now() + 60 * 1000) } }
       );
     } catch (err) {
       console.error(`Failed to send message in thread ${threadId}:`, err);
