@@ -3,7 +3,7 @@ const { CommandBuilder } = require('shardclient');
 module.exports = new CommandBuilder()
   .setName('solved')
   .setDescription('Apply the solved tag and lock the thread')
-  .setCallback(ctx => {
+  .setCallback(async ctx => {
     const channel = ctx.channel;
     const forum = channel.parent;
     if (forum.parent?.name.toLowerCase() !== 'support' || channel.type !== 11)
@@ -12,7 +12,7 @@ module.exports = new CommandBuilder()
     const currentTags = channel.appliedTags;
     const solvedTag = tags.find(tag => tag.name.toLowerCase() === 'solved');
     if (!solvedTag) {
-      ctx.interaction.reply({
+      await ctx.interaction.reply({
         content: "Oops, something went wrong! Our team has been notified, and we'll work on fixing it. Please try again later.",
         ephemeral: true,
       });
@@ -23,6 +23,6 @@ module.exports = new CommandBuilder()
       const newTags = [solvedTag.id];
       channel.setAppliedTags(newTags);
     }
-    ctx.interaction.reply({ content: `This post has been marked as solved.\n-# Post closed <t:${Date.now().toString().slice(0, -3)}:R>.` });
+    await ctx.interaction.reply({ content: `This post has been marked as solved.\n-# Post closed <t:${Date.now().toString().slice(0, -3)}:R>.` });
     channel.setArchived(true);
   });
