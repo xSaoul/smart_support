@@ -1,4 +1,4 @@
-FROM node:18
+FROM ghcr.io/library/node:18
 
 WORKDIR /app
 
