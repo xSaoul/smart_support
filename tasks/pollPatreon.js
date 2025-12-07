@@ -1,7 +1,7 @@
 const Post = require('../db/patreonSchema');
 
 const CAMPAIGN_ID = 13532645;
-const CHANNEL_ID = '1377651698763300986';
+const CHANNEL_ID = '1333435650950696980';
 
 async function pollPatreon(client) {
   try {
