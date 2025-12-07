@@ -72,7 +72,7 @@ async function getDiscordChannel(client, channelId) {
 
 async function sendDiscordNotification(channel, post) {
   const postUrl = `https://www.patreon.com${post.attributes.url}`;
-  / await channel.send(postUrl);
+  // await channel.send(postUrl);
 }
 
 async function fetchPosts() {
