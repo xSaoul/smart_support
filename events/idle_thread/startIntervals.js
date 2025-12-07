@@ -8,6 +8,7 @@ module.exports = new EventBuilder()
   .setTrigger(Events.ClientReady)
   .setOnce(true)
   .setCallback(client => {
+    pollPatreon(client);
     setInterval(
       () => {
         checkIdleThreads(client);
