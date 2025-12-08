@@ -4,11 +4,14 @@
     // File Layout
     "rootDir": "./src",
     "outDir": "./dist",
+    "removeComments": true,
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "NodeNext",
     "target": "esnext",
+    "lib": ["ES2022"],
+    "module": "CommonJS",
+    "moduleResolution": "node",
     "types": ["node"],
     // For nodejs:
     // "lib": ["esnext"],
@@ -23,6 +26,8 @@
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
 
     // Style Options
     "noImplicitReturns": true,
@@ -43,5 +48,5 @@
     "esModuleInterop": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts"]
+  "exclude": ["node_modules", "**/*.spec.ts", "dist"]
 }
