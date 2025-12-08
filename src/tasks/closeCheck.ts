@@ -1,6 +1,7 @@
+import type { ShardClient } from 'shardclient';
 import schema from '../db/thread_schema.js';
 
-export async function checkClosingThreads(client) {
+export async function checkClosingThreads(client: ShardClient) {
   const rows = await schema.find({ closeScheduledTime: { $ne: null, $lt: new Date() } });
 
   console.log(`Found ${rows.length} thread(s) to check for closable status.`);

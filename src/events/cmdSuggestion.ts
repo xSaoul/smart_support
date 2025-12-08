@@ -1,4 +1,5 @@
 import { EventBuilder, Events } from 'shardclient';
+
 const cooldowns = new Map();
 module.exports = new EventBuilder()
   .setName('cmdSuggestion')
