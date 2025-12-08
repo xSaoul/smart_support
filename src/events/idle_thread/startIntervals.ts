@@ -1,6 +1,7 @@
-const { EventBuilder, Events } = require('shardclient');
-const { checkIdleThreads } = require('../../tasks/idleCheck');
-const { checkClosingThreads } = require('../../tasks/closeCheck');
+import { EventBuilder, Events } from 'shardclient';
+import { checkIdleThreads } from '../../tasks/idleCheck.js';
+import { checkClosingThreads } from '../../tasks/closeCheck.js';
+
 module.exports = new EventBuilder()
   .setName('startIntervals')
   .setTrigger(Events.ClientReady)

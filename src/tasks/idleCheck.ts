@@ -1,6 +1,7 @@
-const schema = require('../db/thread_schema');
+import type { ShardClient } from 'shardclient';
+import schema from '../db/thread_schema.js';
 
-async function checkIdleThreads(client) {
+export async function checkIdleThreads(client: ShardClient) {
   const rows = await schema.find({ reminderSent: false, lastPosted: { $lt: new Date(Date.now() - 48 * 60 * 60 * 1000) } });
 
   console.log(`Found ${rows.length} thread(s) to check for idle status.`);
@@ -43,5 +44,3 @@ async function checkIdleThreads(client) {
     }
   }
 }
-
-module.exports = { checkIdleThreads };

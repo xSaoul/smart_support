@@ -1,4 +1,4 @@
-const { CommandBuilder } = require('shardclient');
+import { CommandBuilder } from 'shardclient';
 
 module.exports = new CommandBuilder()
   .setName('faq')
