@@ -1,5 +1,5 @@
-const { EventBuilder, Events } = require('shardclient');
-const threadSchema = require('../../db/thread_schema');
+import { EventBuilder, Events } from 'shardclient';
+import threadSchema from '../../db/thread_schema.js';
 
 module.exports = new EventBuilder()
   .setName('idleTimer')

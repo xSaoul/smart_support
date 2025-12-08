@@ -1,6 +1,6 @@
-const schema = require('../db/thread_schema');
+import schema from '../db/thread_schema.js';
 
-async function checkClosingThreads(client) {
+export async function checkClosingThreads(client) {
   const rows = await schema.find({ closeScheduledTime: { $ne: null, $lt: new Date() } });
 
   console.log(`Found ${rows.length} thread(s) to check for closable status.`);
@@ -32,4 +32,3 @@ async function checkClosingThreads(client) {
     }
   }
 }
-module.exports = { checkClosingThreads };

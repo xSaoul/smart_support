@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 /**
  * @param {String} threadId thread id
@@ -17,4 +17,4 @@ const schema = new mongoose.Schema({
 });
 
 const model = mongoose.model('threads', schema);
-module.exports = model;
+export default model;
