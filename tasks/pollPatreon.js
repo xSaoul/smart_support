@@ -35,7 +35,7 @@ async function pollPatreon(client) {
       await sendDiscordNotification(channel, post);
     }
 
-    await savePostsToDb(postsToPublish);
+    await savePostsToDb(newPosts);
   } catch (error) {
     console.error('Error in pollPatreon execution:', error);
   }
@@ -58,16 +58,12 @@ async function savePostsToDb(posts) {
 }
 
 async function getDiscordChannel(client, channelId) {
-  let channel = client.channels.cache.get(channelId);
-  if (!channel) {
-    try {
-      channel = await client.channels.fetch(channelId);
-    } catch (err) {
-      console.error('Failed to fetch Discord channel:', err.message);
-      return null;
-    }
+  try {
+    return await client.channels.fetch(channelId);
+  } catch (err) {
+    console.error('Failed to fetch Discord channel:', err.message);
+    return null;
   }
-  return channel;
 }
 
 async function sendDiscordNotification(channel, post) {
