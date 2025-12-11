@@ -6,11 +6,12 @@ const CHANNEL_ID = '1333435650950696980';
 async function pollPatreon(client) {
   try {
     const allPosts = await fetchPosts();
+    allPosts.reverse();
 
     const lastSavedPost = await getLastSavedPost();
     const lastPostId = lastSavedPost ? lastSavedPost.postId : null;
 
-    const cutOffIndex = allPosts.findIndex(post => post.id == lastPostId);
+    const cutOffIndex = allPosts.findIndex(post => post.id === lastPostId);
 
     let newPosts = allPosts;
     if (cutOffIndex !== -1) {
@@ -29,9 +30,9 @@ async function pollPatreon(client) {
       return;
     }
 
-    const postsToPublish = [...newPosts].reverse();
+    newPosts.reverse();
 
-    for (const post of postsToPublish) {
+    for (const post of newPosts) {
       await sendDiscordNotification(channel, post);
     }
 
