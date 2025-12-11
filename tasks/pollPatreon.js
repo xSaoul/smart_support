@@ -78,6 +78,7 @@ async function savePostsToDb(posts) {
     title: post.attributes.title,
     publishedAt: new Date(post.attributes.published_at),
     url: post.attributes.url,
+    content: post.attributes.content,
   }));
 
   await Post.insertMany(documents);
@@ -102,9 +103,13 @@ async function sendDiscordNotification(channel, post, thumbnail) {
       url: `https://www.patreon.com${post.attributes.url}`,
     })
     .setURL(`https://www.patreon.com${post.attributes.url}`)
-    .setImage(thumbnail)
     .setTimestamp()
     .setColor('#f1592a');
+  if (thumbnail) {
+    postEmbed.setThumbnail(thumbnail);
+  } else {
+    postEmbed.setDescription(post.attributes.content);
+  }
   await channel.send({ content: '<@&1333433484290691084>', embeds: [postEmbed] });
 }
 
@@ -114,7 +119,7 @@ async function fetchPosts() {
   let allPosts = [];
 
   const params = new URLSearchParams({
-    'fields[post]': 'title,url,published_at',
+    'fields[post]': 'title,url,published_at,content',
     'page[count]': '100',
   });
 
