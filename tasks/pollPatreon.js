@@ -1,4 +1,5 @@
 const Post = require('../db/patreonSchema');
+const { EmbedBuilder } = require('discord.js');
 
 const CAMPAIGN_ID = 13532645;
 const CHANNEL_ID = '1333435650950696980';
@@ -33,12 +34,37 @@ async function pollPatreon(client) {
     newPosts.reverse();
 
     for (const post of newPosts) {
-      await sendDiscordNotification(channel, post);
+      const thumbnail = await getThumbnail('https://www.patreon.com/posts/unmanic-best-for-136500688');
+      await sendDiscordNotification(channel, post, thumbnail);
     }
 
     await savePostsToDb(newPosts);
   } catch (error) {
     console.error('Error in pollPatreon execution:', error);
+  }
+}
+
+async function getThumbnail(url) {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)',
+      },
+    });
+
+    const html = await response.text();
+
+    // Regex to find <meta property="og:image" content="..." />
+    const match = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i);
+
+    if (match && match[1]) {
+      return match[1];
+    } else {
+      console.log('No OG image found.');
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching page:', error);
   }
 }
 
@@ -67,9 +93,19 @@ async function getDiscordChannel(client, channelId) {
   }
 }
 
-async function sendDiscordNotification(channel, post) {
-  const postUrl = `https://www.patreon.com${post.attributes.url}`;
-  await channel.send(postUrl);
+async function sendDiscordNotification(channel, post, thumbnail) {
+  const postEmbed = new EmbedBuilder()
+    .setTitle(post.attributes.title)
+    .setAuthor({
+      name: 'ServersatHome published a new video on Patreon',
+      icon_url: 'https://cdn.discordapp.com/avatars/922966543934042172/2eb035fd0614f9ef86ef2651fb8c1984.webp',
+      url: `https://www.patreon.com${post.attributes.url}`,
+    })
+    .setURL(`https://www.patreon.com${post.attributes.url}`)
+    .setImage(thumbnail)
+    .setTimestamp()
+    .setColor('#f1592a');
+  await channel.send({ content: '<@&1333433484290691084>', embeds: [postEmbed] });
 }
 
 async function fetchPosts() {
