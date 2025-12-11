@@ -34,7 +34,7 @@ async function pollPatreon(client) {
     newPosts.reverse();
 
     for (const post of newPosts) {
-      const thumbnail = await getThumbnail('https://www.patreon.com/posts/unmanic-best-for-136500688');
+      const thumbnail = await getThumbnail(`https://www.patreon.com${post.attributes.url}`);
       await sendDiscordNotification(channel, post, thumbnail);
     }
 
