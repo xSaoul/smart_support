@@ -11,6 +11,7 @@ const mongoose = require('mongoose');
 const schema = new mongoose.Schema({
   threadId: { type: String, required: true },
   opId: { type: String, required: true },
+  helperIds: {type: [String], required: true, default: []},
   lastPosted: { type: Date, default: Date.now },
   reminderSent: { type: Boolean, default: false },
   closeScheduledTime: { type: Date, default: null },
