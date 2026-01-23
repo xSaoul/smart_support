@@ -106,7 +106,7 @@ async function sendDiscordNotification(channel, post, thumbnail) {
     .setTimestamp()
     .setColor('#f1592a');
   if (thumbnail) {
-    postEmbed.setThumbnail(thumbnail);
+    postEmbed.setImage(thumbnail);
   } else {
     postEmbed.setDescription(post.attributes.content);
   }
