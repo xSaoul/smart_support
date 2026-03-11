@@ -13,12 +13,21 @@ module.exports = new EventBuilder()
     const parent = channel.parent;
     if (parent?.parent?.name.toLowerCase() !== 'support' || channel.type !== 11) return;
 
-    const member = msg.member ?? (await msg.guild?.members.fetch(msg.author.id).catch(() => null));
-    if (!member?.roles.cache.has(HELPER_ROLE_ID)) return;
+    const member = await msg.guild?.members.fetch(msg.author.id).catch(() => null);
+    if (!member) {
+      console.log(`[TRACKHELPER] Could not fetch member for ${msg.author.username} (${msg.author.id}).`);
+      return;
+    }
+    if (!member.roles.cache.has(HELPER_ROLE_ID)) {
+      console.log(`[TRACKHELPER] ${msg.author.username} posted in support thread but does not have the Helper role.`);
+      return;
+    }
 
     const updated = await threadSchema.updateOne({ threadId: channel.id }, { $addToSet: { helperIds: msg.author.id } });
 
-    if (updated.matchedCount !== 0) {
+    if (updated.matchedCount === 0) {
+      console.log(`[TRACKHELPER] No thread document found for ${channel.id} — OP hasn't posted yet.`);
+    } else {
       console.log(`[TRACKHELPER] Recorded helper ${msg.author.username} (${msg.author.id}) in thread ${channel.id}.`);
     }
   });
