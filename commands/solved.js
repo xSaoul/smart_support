@@ -24,11 +24,11 @@ module.exports = new CommandBuilder()
 
     if (!currentTags.includes(solvedTag.id)) {
       const newTags = [solvedTag.id];
-      channel.setAppliedTags(newTags);
+      await channel.setAppliedTags(newTags);
     }
     await ctx.interaction.reply({ content: `This post has been marked as solved.\n-# Post closed <t:${Date.now().toString().slice(0, -3)}:R>.` });
 
-    donationMsg(forumId);
+    await donationMsg(ctx, channel.id);
 
     // Sleep for 5 seconds to let OP notice donation message
     await new Promise(r => setTimeout(r, 5000));
@@ -36,7 +36,7 @@ module.exports = new CommandBuilder()
     channel.setArchived(true);
   });
 
-async function donationMsg(forumId) {
+async function donationMsg(ctx, forumId) {
   const helperLinks = {
     // OscarSix
     '211486447369322506': 'https://ko-fi.com/viridianlink',
@@ -52,7 +52,7 @@ async function donationMsg(forumId) {
 
   let donationMsg = '';
 
-  if (threadDb && threadDb.helperLinks) {
+  if (threadDb && threadDb.helperIds) {
     const matchingLinks = threadDb.helperIds.filter(id => helperLinks[id]).map(id => `<@${id}>: ${helperLinks[id]}`);
 
     if (matchingLinks.length > 0) {
@@ -61,8 +61,8 @@ async function donationMsg(forumId) {
   }
 
   if (donationMsg) {
-    await ctx.interaction.reply({
-      content: `If you feel a helper has been particularly helperful in solving your support ticket please consider donating to them:${donationMsg}`,
+    await ctx.interaction.followUp({
+      content: `If you feel a helper has been particularly helpful in solving your support ticket please consider donating to them:${donationMsg}`,
     });
   }
 }
