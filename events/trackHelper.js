@@ -1,5 +1,5 @@
 const { EventBuilder, Events } = require('shardclient');
-const threadSchema = require('../../db/thread_schema');
+const threadSchema = require('../db/thread_schema.js');
 
 const HELPER_ROLE_ID = '1324454387023609917';
 
