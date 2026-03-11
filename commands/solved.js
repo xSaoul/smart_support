@@ -28,6 +28,7 @@ module.exports = new CommandBuilder()
     }
     await ctx.interaction.reply({ content: `This post has been marked as solved.\n-# Post closed <t:${Date.now().toString().slice(0, -3)}:R>.` });
 
+    console.log('Reached: Donation action');
     await donationMsg(ctx, channel.id);
 
     // Sleep for 5 seconds to let OP notice donation message
@@ -37,6 +38,8 @@ module.exports = new CommandBuilder()
   });
 
 async function donationMsg(ctx, forumId) {
+  console.log('Sending donation message...');
+
   const helperLinks = {
     // OscarSix
     '211486447369322506': 'https://ko-fi.com/viridianlink',
@@ -52,6 +55,8 @@ async function donationMsg(ctx, forumId) {
 
   let donationMsg = '';
 
+  console.log('ThreadDb: ', threadDb);
+
   if (threadDb && threadDb.helperIds) {
     const matchingLinks = threadDb.helperIds.filter(id => helperLinks[id]).map(id => `<@${id}>: ${helperLinks[id]}`);
 
@@ -59,6 +64,8 @@ async function donationMsg(ctx, forumId) {
       donationMsg = '\n' + matchingLinks.join('\n');
     }
   }
+
+  console.log('DonationMsg: ', donationMsg);
 
   if (donationMsg) {
     await ctx.interaction.followUp({
