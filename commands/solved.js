@@ -31,8 +31,8 @@ module.exports = new CommandBuilder()
     console.log('Reached: Donation action');
     await donationMsg(ctx, channel.id);
 
-    // Sleep for 5 seconds to let OP notice donation message
-    await new Promise(r => setTimeout(r, 5000));
+    // Sleep for a minute to let OP notice donation message
+    await new Promise(r => setTimeout(r, 60 * 1000));
 
     channel.setArchived(true);
   });
@@ -61,7 +61,7 @@ async function donationMsg(ctx, forumId) {
     const matchingLinks = threadDb.helperIds.filter(id => helperLinks[id]).map(id => `<@${id}>: ${helperLinks[id]}`);
 
     if (matchingLinks.length > 0) {
-      donationMsg = '\n' + matchingLinks.join('\n');
+      donationMsg = `\n${matchingLinks.join('\n')}`;
     }
   }
 
