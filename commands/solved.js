@@ -1,4 +1,5 @@
 const { CommandBuilder } = require('shardclient');
+const threadModel = require('../db/thread_schema.js');
 
 module.exports = new CommandBuilder()
   .setName('solved')
@@ -8,6 +9,7 @@ module.exports = new CommandBuilder()
     const forum = channel.parent;
     if (forum.parent?.name.toLowerCase() !== 'support' || channel.type !== 11)
       return ctx.interaction.reply({ content: 'This command can only be used in a support thread.', ephemeral: true });
+
     const tags = forum.availableTags;
     const currentTags = channel.appliedTags;
     const solvedTag = tags.find(tag => tag.name.toLowerCase() === 'solved');
@@ -19,10 +21,55 @@ module.exports = new CommandBuilder()
       console.log('No solved tag found, does it exist?');
       return;
     }
+
     if (!currentTags.includes(solvedTag.id)) {
       const newTags = [solvedTag.id];
-      channel.setAppliedTags(newTags);
+      await channel.setAppliedTags(newTags);
     }
     await ctx.interaction.reply({ content: `This post has been marked as solved.\n-# Post closed <t:${Date.now().toString().slice(0, -3)}:R>.` });
+
+    console.log('Reached: Donation action');
+    await donationMsg(ctx, channel.id);
+
+    // Sleep for a minute to let OP notice donation message
+    await new Promise(r => setTimeout(r, 60 * 1000));
+
     channel.setArchived(true);
   });
+
+async function donationMsg(ctx, forumId) {
+  console.log('Sending donation message...');
+
+  const helperLinks = {
+    // OscarSix
+    '211486447369322506': 'https://ko-fi.com/viridianlink',
+    // Adiojoe
+    '224057988749459456': 'https://www.buymeacoffee.com/Adiojoe',
+    // Commo
+    '130400218675019777': 'https://buymeacoffee.com/commo',
+    // Tom Tech
+    '357814326662529024': 'https://buymeacoffee.com/tomtech',
+  };
+
+  const threadDb = await threadModel.findOne({ threadId: forumId }).exec();
+
+  let donationMsg = '';
+
+  console.log('ThreadDb: ', threadDb);
+
+  if (threadDb && threadDb.helperIds) {
+    const matchingLinks = threadDb.helperIds.filter(id => helperLinks[id]).map(id => `<@${id}>: ${helperLinks[id]}`);
+
+    if (matchingLinks.length > 0) {
+      donationMsg = `\n${matchingLinks.join('\n')}`;
+    }
+  }
+
+  console.log('DonationMsg: ', donationMsg);
+
+  if (donationMsg) {
+    await ctx.interaction.followUp({
+      content: `If you feel a helper has been particularly helpful in solving your support ticket please consider donating to them:${donationMsg}`,
+    });
+  }
+}
